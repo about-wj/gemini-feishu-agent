@@ -5,6 +5,7 @@ import subprocess
 from pathlib import Path
 import requests
 import dotenv
+import shutil
 
 # ==========================================
 # 1. 路径与环境变量加载
@@ -50,18 +51,32 @@ if missing_vars:
 # ==========================================
 # 2. 获取 Google Cloud 基础信息 (gcloud)
 # ==========================================
-def run_gcloud_command(cmd: str) -> str:
-    """运行 gcloud 命令并返回字符串结果"""
+def run_gcloud_command(cmd_list: list) -> str:
+    """运行 gcloud 命令列表并返回字符串结果（完美跨平台兼容）"""
+    gcloud_path = shutil.which("gcloud")
+    if not gcloud_path:
+        print("错误: 找不到 gcloud 命令，请确保已安装 Google Cloud SDK 并配置了环境变量。")
+        sys.exit(1)
+        
+    cmd_list[0] = gcloud_path
+    
     try:
-        result = subprocess.check_output(cmd, shell=True, text=True, stderr=subprocess.STDOUT)
+        result = subprocess.check_output(cmd_list, text=True, stderr=subprocess.STDOUT)
         return result.strip()
     except subprocess.CalledProcessError as e:
-        print(f"执行 gcloud 命令失败: {e.output}")
+        print(f"执行 gcloud 命令失败:\n{e.output}")
         sys.exit(1)
 
 print("正在获取 GCP Project Number 和 Access Token...")
-project_number = run_gcloud_command(f"gcloud projects describe {project_id} --format='value(projectNumber)'")
-access_token = run_gcloud_command("gcloud auth print-access-token")
+
+project_number_cmd = [
+    "gcloud", "projects", "describe", project_id, 
+    "--format=value(projectNumber)"
+]
+project_number = run_gcloud_command(project_number_cmd)
+
+token_cmd = ["gcloud", "auth", "print-access-token"]
+access_token = run_gcloud_command(token_cmd)
 
 # 全局 HTTP Headers
 headers = {
