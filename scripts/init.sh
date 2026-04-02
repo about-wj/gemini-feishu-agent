@@ -57,13 +57,20 @@ function install_uv() {
 # 4. 准备 Python 环境
 function setup_python_env() {
     echo -e "${YELLOW}--- [4/6] 准备 Python 环境 ---${NC}"
+    
+    # 检查配置文件是否存在
     if [ ! -f "pyproject.toml" ]; then
         echo -e "${RED}错误: 未找到 pyproject.toml，请在项目根目录运行。${NC}"
         exit 1
     fi
     
+    echo "正在检查并安装 Python 3.12 解释器..."
+    # 下载一个稳定且兼容性好的版本
+    uv python install 3.12
+    
     echo "正在同步依赖并创建虚拟环境..."
-    uv sync
+    uv sync --python 3.12
+    
     echo -e "${GREEN}Python 环境准备完成。${NC}"
 }
 
