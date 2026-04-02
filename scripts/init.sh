@@ -45,9 +45,8 @@ function install_uv() {
     if ! command -v uv &> /dev/null; then
         echo -e "未检测到 uv，正在安装..."
         curl -LsSf https://astral.sh/uv/install.sh | sh
-        # 尝试刷新路径
-        source $HOME/.cargo/env &> /dev/null || true
-        export PATH="$HOME/.cargo/bin:$PATH"
+        # 尝试刷新路径，将 uv 的实际安装目录加入 PATH
+        export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
     # else
     #     echo -e "uv 已安装，正在尝试更新..."
     #     uv self update || true
