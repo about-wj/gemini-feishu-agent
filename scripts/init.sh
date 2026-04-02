@@ -64,12 +64,12 @@ function setup_python_env() {
         exit 1
     fi
     
-    echo "正在检查并安装 Python 3.12 解释器..."
+    echo "正在检查并安装 Python 3.13 解释器..."
     # 下载一个稳定且兼容性好的版本
-    uv python install 3.12
+    uv python install 3.13
     
     echo "正在同步依赖并创建虚拟环境..."
-    uv sync --python 3.12
+    uv sync --python 3.13
     
     echo -e "${GREEN}Python 环境准备完成。${NC}"
 }
